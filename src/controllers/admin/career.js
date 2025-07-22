@@ -142,9 +142,7 @@ exports.applyForJob = async (req, res) => {
     const { jobId, fullName, email, phone, portfolio, linkedIn, findWhere } =
       req.body;
 
-    const resumeAttachment = req.files
-      ? req.files.map((file) => file.filename)
-      : [];
+    const resumeAttachment = req.file ? req.file.filename : "";
 
     const newJobReply = new JobReply({
       jobId,
