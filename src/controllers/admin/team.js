@@ -20,7 +20,6 @@ exports.addTeamMember = async (req, res) => {
   }
 };
 
-
 exports.updateTeamMember = async (req, res) => {
   try {
     // 1. Fetch the existing team member
@@ -54,6 +53,15 @@ exports.getAllTeamMembers = async (req, res) => {
   try {
     const members = await Team.find();
     res.status(200).json({ success: true, data: members });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getActiveTeamMembers = async (req, res) => {
+  try {
+    const activeMembers = await Team.find({ toggle: true });
+    res.status(200).json({ success: true, data: activeMembers });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

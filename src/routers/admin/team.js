@@ -4,6 +4,7 @@ const {
   addTeamMember,
   deleteTeamMember,
   getAllTeamMembers,
+  getActiveTeamMembers,
   updateTeamMember,
 } = require("../../controllers/admin/team");
 const auth = require("../../../auth/adminauth");
@@ -22,8 +23,8 @@ let upload = multer({
 });
 
 router.post("/team", auth, upload.single("image"), addTeamMember);
-router.get("/team", getAllTeamMembers);
-// router.get("/team/:id", getTeamMember);
+router.get("/team", auth, getAllTeamMembers);
+router.get("/activeTeam", getActiveTeamMembers);
 router.put("/team/:id", auth, upload.single("image"), updateTeamMember);
 router.delete("/team/:id", auth, deleteTeamMember);
 
