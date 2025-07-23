@@ -8,7 +8,7 @@ const SECRET = "6LeCIygrAAAAAIk3InqL_ykWyb21XS17TVgLMcji"; // Your secret key fo
 exports.submitFeedback = async (req, res) => {
   try {
     const { name, frmName, title, email, message, rating, service, recaptchaValue } = req.body;
-    const feedBackImage = req.file ? req.file.filename : null;
+   const feedBackImage = req.files ? req.files.map(file => file.filename) : [];
 
     // Verify reCAPTCHA
     axios({

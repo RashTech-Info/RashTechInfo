@@ -8,7 +8,7 @@ const feedbackSchema = new mongoose.Schema({
   message: { type: String, required: true },
   rating: { type: Number, required: true },
   service: { type: String },
-  reviewImage: { type: String },
+  reviewImage: { type: [String] },
   createdAt: { type: Date, default: Date.now },
   approved: { type: Boolean, default: false },
 }, { timestamps: true });
