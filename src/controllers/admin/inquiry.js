@@ -2,7 +2,7 @@ const Inquiry = require("../../model/inquiryModel");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 
-const SECRET = "6LeCIygrAAAAAIk3InqL_ykWyb21XS17TVgLMcji"; // Your secret key for reCAPTCHA
+const SECRET = "6LeohI0rAAAAANNj4RnLMet6vyJ8xQmRl24b6_fQ"; // Your secret key for reCAPTCHA
 
 exports.submitInquiry = async (req, res) => {
   try {
@@ -16,15 +16,15 @@ exports.submitInquiry = async (req, res) => {
       message,
     } = req.body;
 
-    // let recaptchaValue = req.body.recaptchaValue; // Assuming you are sending recaptcha value from client
+    let recaptchaValue = req.body.recaptchaValue; // Assuming you are sending recaptcha value from client
 
-    // axios({
-    //   url: `https://www.google.com/recaptcha/api/siteverify?secret=${SECRET}&response=${recaptchaValue}`,
-    //   method: "POST",
-    // }).then(async ({ data }) => {
-    //   console.log(data);
+    axios({
+      url: `https://www.google.com/recaptcha/api/siteverify?secret=${SECRET}&response=${recaptchaValue}`,
+      method: "POST",
+    }).then(async ({ data }) => {
+      console.log(data);
 
-      // if (data.success) {
+      if (data.success) {
         // Save inquiry to MongoDB
         const newInquiry = new Inquiry({
           fullName,
@@ -103,11 +103,11 @@ exports.submitInquiry = async (req, res) => {
         await transporter.sendMail(userMailOptions);
 
         res.status(200).json({ message: "Inquiry submitted and emails sent." });
-      // } 
-      // else {
-      //   res.status(400).json({ message: "Recaptcha verification failed!" });
-      // }
-    // });
+      } 
+      else {
+        res.status(400).json({ message: "Recaptcha verification failed!" });
+      }
+    });
   } catch (error) {
     console.error("Error processing inquiry:", error);
     res.status(500).json({ message: "Failed to process inquiry." });

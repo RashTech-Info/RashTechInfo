@@ -2,7 +2,7 @@ const feedBack = require("../../model/feedback");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 
-const SECRET = "6LeCIygrAAAAAIk3InqL_ykWyb21XS17TVgLMcji"; // Your secret key for reCAPTCHA
+const SECRET = "6LeohI0rAAAAANNj4RnLMet6vyJ8xQmRl24b6_fQ"; // Your secret key for reCAPTCHA
 
 // create feedback
 exports.submitFeedback = async (req, res) => {
