@@ -22,9 +22,9 @@ let upload = multer({
 });
 
 // Route to submit feedback
-router.post("/submitFeedback", upload.array("reviewImage"), submitFeedback);
+router.post("/submitFeedback", upload.array("reviewImage", 5), submitFeedback);
 // Route to get all feedback
-router.get("/getFeedback", auth, getFeedback);
+router.get("/getFeedback",  getFeedback);
 // Route to approve feedback
 router.put("/approveFeedback/:id", auth, approveFeedback);
 // Route to get approved feedback

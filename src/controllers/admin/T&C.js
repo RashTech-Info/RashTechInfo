@@ -1,98 +1,109 @@
+// controllers/termsController.js
 const TermsAndConditions = require("../../model/T&C");
-
-// Add new T&C
-exports.addTerms = async (req, res) => {
+// Create or Update Terms/Privacy Policy
+exports.saveTerms = async (req, res) => {
   try {
-    const { headings, type, isActive } = req.body;
+    const { type, headings, isActive } = req.body;
 
-    if (!type || !["terms", "privacy"].includes(type)) {
-      return res.status(400).json({ message: "Invalid or missing type" });
+    if (!type || !headings || headings.length === 0) {
+      return res.status(400).json({ error: "Type and headings are required." });
     }
 
-    if (!headings || !Array.isArray(headings) || headings.length === 0) {
-      return res.status(400).json({ message: "Headings are required" });
+    let document = await TermsAndConditions.findOne({ type });
+
+    if (document) {
+      // Update
+      document.headings = headings;
+      document.isActive = isActive ?? document.isActive;
+      await document.save();
+      return res
+        .status(200)
+        .json({ message: "Updated successfully", data: document });
+    } else {
+      // Create
+      const newDoc = await TermsAndConditions.create({
+        type,
+        headings,
+        isActive,
+      });
+      return res
+        .status(201)
+        .json({ message: "Created successfully", data: newDoc });
     }
-
-    const newTerms = new TermsAndConditions({
-      headings,
-      type,
-      isActive: isActive || false, // optional in body
-    });
-
-    await newTerms.save();
-
-    res.status(201).json({
-      message: "Terms and Conditions saved successfully",
-      data: newTerms,
-    });
   } catch (error) {
-    console.error("Error adding T&C:", error);
-    res.status(500).json({ message: "Failed to add Terms and Conditions" });
+    console.error("Error in saveTerms:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Get latest active T&C
-exports.activeTerms = async (req, res) => {
-  try {
-    const latest = await TermsAndConditions.findOne({ isActive: true }).sort({
-      createdAt: -1,
-    });
-
-    if (!latest) {
-      return res.status(404).json({ message: "No active Terms found." });
-    }
-
-    res.status(200).json(latest);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch Terms and Conditions" });
-  }
-};
-
-// Update status of specific T&C
 exports.updateTerms = async (req, res) => {
   try {
-    let { headings, type, isActive } = req.body;
-    let id = req.params._id;
-    await TermsAndConditions.findOneAndUpdate(
-      { _id: id },
-      { isActive: isActive, headings: headings, type: type }
+    const { _id } = req.params;
+    const { headings, isActive } = req.body;
+
+    const updatedDoc = await TermsAndConditions.findByIdAndUpdate(
+      _id,
+      { headings, isActive },
+      { new: true }
     );
-    res.status(200).json({ message: "T&C updated successfully." });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update Terms." });
-  }
-};
 
-// Get all T&C
-exports.getAllTerms = async (req, res) => {
-  try {
-    const terms = await TermsAndConditions.find({type:"terms"}).sort({
-      createdAt: -1,
-    });
-    const privacy = await TermsAndConditions.find({type:"privacy"}).sort({
-      createdAt: -1,
-    });
-
-    res.status(200).json({ terms, privacy });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch Terms and Conditions" });
-  }
-};
-
-// Delete specific T&C
-exports.deleteTerms = async (req, res) => {
-  try {
-    const id = req.params._id;
-
-    const deletedTerms = await TermsAndConditions.findOneAndDelete({ _id: id });
-
-    if (!deletedTerms) {
-      return res.status(404).json({ message: "Terms not found." });
+    if (!updatedDoc) {
+      return res.status(404).json({ message: "Document not found" });
     }
 
-    res.status(200).json({ message: "Terms deleted successfully" });
+    res.status(200).json({ message: "Updated successfully", data: updatedDoc });
   } catch (error) {
-    console.error("Error deleting terms:", error);
-    res.status(500).json({ message: "Failed to delete terms" });
+    console.error("Error in updateTerms:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+// Get Terms or Privacy by Type
+exports.getTermsByType = async (req, res) => {
+  try {
+    const privacy = await TermsAndConditions.find({
+      type: "privacy",
+      isActive: true,
+    });
+    const terms = await TermsAndConditions.find({
+      type: "terms",
+      isActive: true,
+    });
+
+    if (!privacy && !terms) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.status(200).json({ data: { privacy, terms } });
+  } catch (error) {
+    console.error("Error in getTermsByType:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Get all (Admin Purpose)
+exports.getAllTerms = async (req, res) => {
+  try {
+    const docs = await TermsAndConditions.find().sort({ createdAt: -1 });
+    res.status(200).json({ data: docs });
+  } catch (error) {
+    console.error("Error in getAllTerms:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.deleteTerms = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedDoc = await TermsAndConditions.findByIdAndDelete(id);
+
+    if (!deletedDoc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.status(200).json({ message: "Deleted successfully", data: deletedDoc });
+  } catch (error) {
+    console.error("Error in deleteTerms:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

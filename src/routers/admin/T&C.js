@@ -1,12 +1,25 @@
+// routes/termsRoutes.js
 const express = require("express");
 const router = express.Router();
-const {addTerms,getAllTerms,activeTerms,updateTerms,deleteTerms} = require("../../controllers/admin/T&C");
-const auth = require("../../../auth/adminauth");
+const {
+  deleteTerms,
+  getAllTerms,
+  getTermsByType,
+  saveTerms,
+  updateTerms
+} = require("../../controllers/admin/T&C");
 
-router.post("/add-terms", auth, addTerms);
-router.get("/active-terms", activeTerms);
-router.patch("/update-terms/:_id", auth, updateTerms);
-router.get("/all-terms", auth, getAllTerms);
-router.delete("/delete-terms/:_id", auth, deleteTerms);
+// POST or PUT - Create/Update Terms or Privacy
+router.post("/addTerm&policy", saveTerms);
+
+router.patch("/updateTerm&policy/:_id", updateTerms);
+// GET by type (e.g., /api/terms/privacy or /api/terms/terms)
+router.get("/activeTnC", getTermsByType);
+
+// GET all (admin purpose)
+router.get("/getAll", getAllTerms);
+
+// DELETE by ID (if needed)
+router.delete("/deleteT&C/:id", deleteTerms);
 
 module.exports = router;
