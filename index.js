@@ -60,6 +60,7 @@ const adminRoutes = [
   "project",
   "register",
   "sign_out",
+  "seo",
   "T&C",
   "team",
 ];
