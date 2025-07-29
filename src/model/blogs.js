@@ -11,11 +11,6 @@ const BlogSchema = new mongoose.Schema({
     required: true,
   },
 
-  date: {
-    type: String,
-    required: true,
-  },
-
   description: {
     type: String,
     required: true,
@@ -25,6 +20,7 @@ const BlogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  createdAt: { type: Date, default: Date.now },
 });
 
 const Blog = mongoose.model("Blog", BlogSchema);

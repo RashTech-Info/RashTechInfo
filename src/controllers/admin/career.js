@@ -215,3 +215,17 @@ exports.getJobApplications = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch job applications" });
   }
 };
+
+exports.getAllJobApplications = async (req, res) => {
+  try {
+    const jobApplications = await JobReply.find();
+
+    res.status(200).json({
+      message: "Job applications fetched successfully",
+      data: jobApplications,
+    });
+  } catch (error) {
+    console.error("Error fetching job applications:", error);
+    res.status(500).json({ message: "Failed to fetch job applications" });
+  }
+}

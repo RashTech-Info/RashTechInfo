@@ -7,7 +7,8 @@ const {
   getOpenCareers,
   updateCareer,
   applyForJob,
-  getJobApplications
+  getJobApplications,
+getAllJobApplications
 } = require("../../controllers/admin/career");
 let router = express.Router();
 let auth = require("../../../auth/adminauth");
@@ -28,10 +29,11 @@ let upload = multer({
 router.post("/adminAdd_Career", auth, addCareer);
 router.delete("/adminDelete_Career/:_id", auth, deleteCareer);
 router.get("/adminGetAll_Careers", auth, getAllCareers);
-router.get("/adminGet_Career/:_id",  getCareerById);
+router.get("/adminGet_Career/:_id", auth, getCareerById);
 router.get("/GetOpen_Careers", getOpenCareers);
 router.put("/adminUpdate_Career/:_id", auth, updateCareer);
 router.post("/applyForJob", upload.single("resumeAttachment"), applyForJob);
 router.get("/adminGetJobApplications/:jobId", auth, getJobApplications);
+router.get("/adminGetAll_Applications", auth, getAllJobApplications);
 
 module.exports = router;
